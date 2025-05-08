@@ -63,10 +63,35 @@ const deleteAircraft = async (req, res) => {
   }
 };
 
+const bulkCreateAircraft = async (req, res) => {
+  try {
+    if (!Array.isArray(req.body)) {
+      return res.status(400).json({ message: 'Request body must be an array of aircraft' });
+    }
+
+    const startTime = Date.now();
+    
+    const createdAircraft = await Pesawat.insertMany(req.body);
+    
+    const endTime = Date.now();
+    const processingTime = endTime - startTime;
+    
+    res.status(201).json({
+      message: `Successfully created ${createdAircraft.length} aircraft`,
+      processingTime: `${processingTime} ms`,
+      count: createdAircraft.length,
+      data: createdAircraft
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllAircraft,
   getAircraftById,
   createAircraft,
   updateAircraft,
-  deleteAircraft
+  deleteAircraft,
+  bulkCreateAircraft
 };

@@ -63,10 +63,35 @@ const deletePassenger = async (req, res) => {
   }
 };
 
+const bulkCreatePassengers = async (req, res) => {
+  try {
+    if (!Array.isArray(req.body)) {
+      return res.status(400).json({ message: 'Request body must be an array of passengers' });
+    }
+
+    const startTime = Date.now();
+    
+    const createdPassengers = await Penumpang.insertMany(req.body);
+    
+    const endTime = Date.now();
+    const processingTime = endTime - startTime;
+    
+    res.status(201).json({
+      message: `Successfully created ${createdPassengers.length} passengers`,
+      processingTime: `${processingTime} ms`,
+      count: createdPassengers.length,
+      data: createdPassengers
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllPassengers,
   getPassengerById,
   createPassenger,
   updatePassenger,
-  deletePassenger
+  deletePassenger,
+  bulkCreatePassengers
 };
