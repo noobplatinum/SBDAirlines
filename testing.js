@@ -56,7 +56,7 @@ const seedData = async () => {
         tahun_berdiri: 1947
       }
     ]);
-    console.log('Airlines created:', airlines.length);
+    console.log('Airlines created', airlines.length);
 
     const aircraft = await Pesawat.create([
       {
@@ -88,7 +88,7 @@ const seedData = async () => {
         status_pesawat: 'Perawatan'
       }
     ]);
-    console.log('Aircraft created:', aircraft.length);
+    console.log('Aircraft created', aircraft.length);
 
     const terminals = await Terminal.create([
       {
@@ -149,7 +149,7 @@ const seedData = async () => {
         kapasitas_area: 250
       }
     ]);
-    console.log('Gates created:', gates.length);
+    console.log('Gates created', gates.length);
 
     const passengers = await Penumpang.create([
       {
@@ -189,10 +189,8 @@ const seedData = async () => {
         kewarganegaraan: 'Spain'
       }
     ]);
-    console.log('Passengers created:', passengers.length);
+    console.log('Passengers created', passengers.length);
 
-    // 6. Create Flights
-    // Create dates for flights
     const today = new Date();
     const departureDate1 = new Date(today);
     departureDate1.setHours(today.getHours() + 2);
@@ -246,7 +244,6 @@ const seedData = async () => {
     ]);
     console.log('Flights created:', flights.length);
 
-    // 7. Create Tickets
     const tickets = await Tiket.create([
       {
         penumpang_id: passengers[0]._id,
@@ -299,12 +296,10 @@ const seedData = async () => {
   }
 };
 
-// Test API Endpoints
 const testAPI = async (data) => {
   try {
     console.log('\n--- Starting API Tests ---\n');
 
-    // Test Airline endpoints
     console.log('Testing Airline endpoints:');
     const airlineResponse = await axios.get(`${API_URL}/airlines`);
     console.log(`GET /airlines: ${airlineResponse.status} - Found ${airlineResponse.data.length} airlines`);
@@ -314,7 +309,6 @@ const testAPI = async (data) => {
       console.log(`GET /airlines/:id: ${airlineDetailResponse.status} - Found airline: ${airlineDetailResponse.data.nama_maskapai}`);
     }
 
-    // Test Aircraft endpoints
     console.log('\nTesting Aircraft endpoints:');
     const aircraftResponse = await axios.get(`${API_URL}/aircraft`);
     console.log(`GET /aircraft: ${aircraftResponse.status} - Found ${aircraftResponse.data.length} aircraft`);
@@ -324,7 +318,6 @@ const testAPI = async (data) => {
       console.log(`GET /aircraft/:id: ${aircraftDetailResponse.status} - Found aircraft: ${aircraftDetailResponse.data.model_pesawat}`);
     }
 
-    // Test Terminal endpoints
     console.log('\nTesting Terminal endpoints:');
     const terminalResponse = await axios.get(`${API_URL}/terminals`);
     console.log(`GET /terminals: ${terminalResponse.status} - Found ${terminalResponse.data.length} terminals`);
@@ -334,7 +327,6 @@ const testAPI = async (data) => {
       console.log(`GET /terminals/:id: ${terminalDetailResponse.status} - Found terminal: ${terminalDetailResponse.data.nama_terminal}`);
     }
 
-    // Test Gate endpoints
     console.log('\nTesting Gate endpoints:');
     const gateResponse = await axios.get(`${API_URL}/gates`);
     console.log(`GET /gates: ${gateResponse.status} - Found ${gateResponse.data.length} gates`);
@@ -344,7 +336,6 @@ const testAPI = async (data) => {
       console.log(`GET /gates/:id: ${gateDetailResponse.status} - Found gate: ${gateDetailResponse.data.nomor_gate}`);
     }
 
-    // Test Passenger endpoints
     console.log('\nTesting Passenger endpoints:');
     const passengerResponse = await axios.get(`${API_URL}/passengers`);
     console.log(`GET /passengers: ${passengerResponse.status} - Found ${passengerResponse.data.length} passengers`);
@@ -354,7 +345,6 @@ const testAPI = async (data) => {
       console.log(`GET /passengers/:id: ${passengerDetailResponse.status} - Found passenger: ${passengerDetailResponse.data.nama_penumpang}`);
     }
 
-    // Test Flight endpoints
     console.log('\nTesting Flight endpoints:');
     const flightResponse = await axios.get(`${API_URL}/flights`);
     console.log(`GET /flights: ${flightResponse.status} - Found ${flightResponse.data.length} flights`);
@@ -364,7 +354,6 @@ const testAPI = async (data) => {
       console.log(`GET /flights/:id: ${flightDetailResponse.status} - Found flight from ${flightDetailResponse.data.asal_bandara} to ${flightDetailResponse.data.tujuan_bandara}`);
     }
 
-    // Test Ticket endpoints
     console.log('\nTesting Ticket endpoints:');
     const ticketResponse = await axios.get(`${API_URL}/tickets`);
     console.log(`GET /tickets: ${ticketResponse.status} - Found ${ticketResponse.data.length} tickets`);
@@ -374,7 +363,6 @@ const testAPI = async (data) => {
       console.log(`GET /tickets/:id: ${ticketDetailResponse.status} - Found ticket: seat ${ticketDetailResponse.data.seat_number}, class ${ticketDetailResponse.data.kelas_penerbangan}`);
     }
 
-    // Test POST endpoint with a new passenger
     console.log('\nTesting POST /passengers endpoint:');
     const newPassenger = {
       nama_penumpang: 'Alex Johnson',
@@ -389,13 +377,11 @@ const testAPI = async (data) => {
     const createPassengerResponse = await axios.post(`${API_URL}/passengers`, newPassenger);
     console.log(`POST /passengers: ${createPassengerResponse.status} - Created passenger with ID: ${createPassengerResponse.data._id}`);
 
-    // Test PUT endpoint with the created passenger
     console.log('\nTesting PUT /passengers/:id endpoint:');
     const updatedPassenger = { ...newPassenger, alamat: 'Updated: Jl. Diponegoro No. 202, Surabaya' };
     const updatePassengerResponse = await axios.put(`${API_URL}/passengers/${createPassengerResponse.data._id}`, updatedPassenger);
     console.log(`PUT /passengers/:id: ${updatePassengerResponse.status} - Updated passenger with new address: ${updatePassengerResponse.data.alamat}`);
 
-    // Test DELETE endpoint with the created passenger
     console.log('\nTesting DELETE /passengers/:id endpoint:');
     const deletePassengerResponse = await axios.delete(`${API_URL}/passengers/${createPassengerResponse.data._id}`);
     console.log(`DELETE /passengers/:id: ${deletePassengerResponse.status} - ${deletePassengerResponse.data.message}`);
@@ -408,13 +394,11 @@ const testAPI = async (data) => {
       console.error('Response data:', error.response.data);
     }
   } finally {
-    // Disconnect from MongoDB
     mongoose.disconnect();
     console.log('Disconnected from MongoDB');
   }
 };
 
-// Update the helper function to generate a passenger batch with unique values
 const generatePassengerBatch = (size, startIndex = 0) => {
   const passengers = [];
   
@@ -422,8 +406,8 @@ const generatePassengerBatch = (size, startIndex = 0) => {
     const uniqueIndex = startIndex + i;
     passengers.push({
       nama_penumpang: `Passenger ${uniqueIndex}`,
-      nomor_passport: `P${200000 + uniqueIndex}`, // Increased starting number to avoid conflicts
-      nomor_identitas: `${20000000000000 + uniqueIndex}`, // Increased starting number 
+      nomor_passport: `P${200000 + uniqueIndex}`, 
+      nomor_identitas: `${20000000000000 + uniqueIndex}`, 
       nomor_telepon: `+628123456${String(uniqueIndex).padStart(4, '0')}`,
       email: `passenger${uniqueIndex}@example.com`,
       alamat: `Jl. Test No. ${uniqueIndex}, Jakarta`,
@@ -434,7 +418,6 @@ const generatePassengerBatch = (size, startIndex = 0) => {
   return passengers;
 };
 
-// Update the helper function to generate an aircraft batch with unique values
 const generateAircraftBatch = (size, airlineIds, startIndex = 0) => {
   const aircraft = [];
   const models = ['Boeing 737', 'Airbus A320', 'Boeing 777', 'Airbus A350', 'ATR 72'];
@@ -446,9 +429,9 @@ const generateAircraftBatch = (size, airlineIds, startIndex = 0) => {
     
     aircraft.push({
       maskapai_id: airlineIds[randomAirlineIndex],
-      model_pesawat: `${models[modelIndex]}-${200 + uniqueIndex}`, // Add uniqueIndex to ensure uniqueness
+      model_pesawat: `${models[modelIndex]}-${200 + uniqueIndex}`, 
       kapasitas_penumpang: 150 + (uniqueIndex % 250),
-      nomor_registrasi: `REG-${20000 + uniqueIndex}`, // Increased starting number to avoid conflicts
+      nomor_registrasi: `REG-${20000 + uniqueIndex}`, 
       status_pesawat: uniqueIndex % 5 === 0 ? 'Perawatan' : 'Aktif'
     });
   }
@@ -456,10 +439,8 @@ const generateAircraftBatch = (size, airlineIds, startIndex = 0) => {
   return aircraft;
 };
 
-// Modify the test bulk passenger creation function to use incremental indices
 const testBulkPassengerCreation = async (batchSize) => {
   try {
-    // Use static variable to keep track of the index across function calls
     if (!testBulkPassengerCreation.currentIndex) {
       testBulkPassengerCreation.currentIndex = 0;
     }
@@ -485,15 +466,12 @@ const testBulkPassengerCreation = async (batchSize) => {
   }
 };
 
-// Modify the test bulk aircraft creation function to use incremental indices
 const testBulkAircraftCreation = async (batchSize) => {
   try {
-    // Use static variable to keep track of the index across function calls
     if (!testBulkAircraftCreation.currentIndex) {
       testBulkAircraftCreation.currentIndex = 0;
     }
     
-    // First, get some airline IDs to use
     const airlinesResponse = await axios.get(`${API_URL}/airlines`);
     const airlineIds = airlinesResponse.data.map(airline => airline._id);
     
@@ -523,18 +501,15 @@ const testBulkAircraftCreation = async (batchSize) => {
   }
 };
 
-// Update the testBulkOperations function to try larger batch sizes
 const testBulkOperations = async () => {
   try {
     console.log('\n--- Testing Bulk Operations for DB Efficiency ---\n');
     
-    // Test bulk passenger creation with different batch sizes
     console.log('Testing Bulk Passenger Creation:');
     await testBulkPassengerCreation(10);
     await testBulkPassengerCreation(100);
     await testBulkPassengerCreation(200);
     
-    // Test bulk aircraft creation with different batch sizes
     console.log('\nTesting Bulk Aircraft Creation:');
     await testBulkAircraftCreation(10);
     await testBulkAircraftCreation(50);
@@ -550,10 +525,8 @@ const testBulkOperations = async () => {
   }
 };
 
-  // Modify the main function to include bulk operations testing
   const runSeedAndTest = async () => {
     try {
-      // First ensure the server is running
       console.log('Checking if the server is running...');
       try {
         await axios.get('http://localhost:3000/');
@@ -563,13 +536,10 @@ const testBulkOperations = async () => {
         process.exit(1);
       }
   
-      // Seed the database
       const data = await seedData();
       
-      // Test the API
       await testAPI(data);
       
-      // Test bulk operations for database efficiency
       await testBulkOperations();
       
       process.exit(0);
