@@ -5,7 +5,8 @@ const {
   getAircraftById,
   createAircraft,
   updateAircraft,
-  deleteAircraft
+  deleteAircraft,
+  bulkCreateAircraft
 } = require('../controllers/aircraft.controller');
 
 router.get('/', getAllAircraft);
@@ -17,5 +18,7 @@ router.post('/', createAircraft);
 router.put('/:id', updateAircraft);
 
 router.delete('/:id', deleteAircraft);
+
+router.post('/bulk', bulkCreateAircraft);
 
 module.exports = router;
