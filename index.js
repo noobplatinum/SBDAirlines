@@ -13,21 +13,33 @@ const ticketRoutes = require('./routes/ticket.route');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SHARD_ID = process.env.SHARD_ID || '0';
+
+console.log(`🔧 Starting Shard ID: ${SHARD_ID}`);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Basic CORS setup
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   next();
 });
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Failed to connect to MongoDB:', err));
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log(`✅ [Shard ${SHARD_ID}] Connected to MongoDB`))
+  .catch(err => console.error(`❌ [Shard ${SHARD_ID}] Failed to connect to MongoDB:`, err));
 
+// Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/airlines', airlineRoutes);
 app.use('/api/aircraft', aircraftRoutes);
@@ -37,10 +49,12 @@ app.use('/api/passengers', passengerRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/tickets', ticketRoutes);
 
+// Test route
 app.get('/', (req, res) => {
-  res.send('Airport Management API');
+  res.send(`Airport Management API - Shard ${SHARD_ID}`);
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 [Shard ${SHARD_ID}] Server running on port ${PORT}`);
 });
