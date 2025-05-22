@@ -203,10 +203,46 @@ const migrateUsers = async (req, res) => {
   }
 };
 
+const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    const userData = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      penumpang_id: user.penumpang_id
+    };
+    
+    if (user.penumpang_id) {
+      try {
+        const passengerDetails = await Penumpang.findById(user.penumpang_id);
+        if (passengerDetails) {
+          userData.passenger_details = passengerDetails;
+        }
+      } catch (err) {
+        console.log("Could not fetch passenger details:", err);
+      }
+    }
+    
+    res.status(200).json(userData);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
   createPassengerForUser,
-  migrateUsers
+  migrateUsers,
+  getUserProfile 
 };

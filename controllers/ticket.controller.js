@@ -83,10 +83,31 @@ const deleteTicket = async (req, res) => {
   }
 };
 
+const getTicketsByPassenger = async (req, res) => {
+  try {
+    const tickets = await Tiket.find({ penumpang_id: req.params.id })
+      .populate('penumpang_id')
+      .populate({
+        path: 'flight_id',
+        populate: [
+        { path: 'maskapai_id' },
+        { path: 'pesawat_id' },
+        { path: 'gate_id' }
+        ]
+      });
+
+    res.status(200).json(tickets);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+
 module.exports = {
   getAllTickets,
   getTicketById,
   createTicket,
   updateTicket,
-  deleteTicket
+  deleteTicket,
+  getTicketsByPassenger
 };

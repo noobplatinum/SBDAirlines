@@ -5,10 +5,13 @@ const {
   getTicketById,
   createTicket,
   updateTicket,
-  deleteTicket
+  deleteTicket,
+  getTicketsByPassenger
 } = require('../controllers/ticket.controller');
 
 router.get('/', getAllTickets);
+
+router.get('/passenger/:id', getTicketsByPassenger);
 
 router.get('/:id', getTicketById);
 
