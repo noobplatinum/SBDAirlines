@@ -5,7 +5,6 @@ const register = async (req, res) => {
   try {
     const { username, email, password, name, nomor_identitas, nomor_telepon, kewarganegaraan, role } = req.body;
 
-    // Check if user exists
     const existingUser = await User.findOne({ 
       $or: [{ email }, { username }] 
     });
@@ -16,12 +15,10 @@ const register = async (req, res) => {
       });
     }
 
-    // Create passenger record
     const passengerName = name || username;
     const nationality = kewarganegaraan || 'Not Specified';
     
     try {
-      // Create passenger record
       const newPassenger = new Penumpang({
         nama_penumpang: passengerName,
         nomor_identitas: nomor_identitas || '',
@@ -33,7 +30,6 @@ const register = async (req, res) => {
       const savedPassenger = await newPassenger.save();
       console.log("Passenger created successfully:", savedPassenger._id);
       
-      // Create user with reference to passenger
       const userRole = !role || role === 'passenger' ? 'passenger' : 'admin';
       const newUser = new User({
         username,
@@ -46,7 +42,6 @@ const register = async (req, res) => {
       const savedUser = await newUser.save();
       console.log("User created successfully:", savedUser._id);
       
-      // Prepare response
       const userResponse = {
         _id: savedUser._id,
         username: savedUser.username,
@@ -62,10 +57,8 @@ const register = async (req, res) => {
     } catch (error) {
       console.error("Error during registration:", error);
       
-      // Check if passenger was created but user wasn't
       const passenger = await Penumpang.findOne({ email });
       if (passenger) {
-        // Clean up the created passenger to avoid orphaned records
         await Penumpang.findByIdAndDelete(passenger._id);
         console.log("Cleaned up orphaned passenger record:", passenger._id);
       }
@@ -91,7 +84,6 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Include penumpang details in response
     let userData = {
       _id: user._id,
       username: user.username,
@@ -100,7 +92,6 @@ const login = async (req, res) => {
       penumpang_id: user.penumpang_id
     };
 
-    // Get passenger details if penumpang_id exists
     if (user.penumpang_id) {
       try {
         const passengerDetails = await Penumpang.findById(user.penumpang_id);
@@ -121,7 +112,6 @@ const login = async (req, res) => {
   }
 };
 
-// Add a function to create passenger record for users who don't have one
 const createPassengerForUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -132,7 +122,6 @@ const createPassengerForUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if user already has a passenger ID
     if (user.penumpang_id) {
       return res.status(400).json({ 
         message: 'User already has a passenger ID',
@@ -140,7 +129,6 @@ const createPassengerForUser = async (req, res) => {
       });
     }
 
-    // Create new passenger
     const passengerName = name || user.username;
     const nationality = kewarganegaraan || 'Not Specified';
     
@@ -154,7 +142,6 @@ const createPassengerForUser = async (req, res) => {
 
     const savedPassenger = await newPassenger.save();
 
-    // Update user with new passenger ID
     user.penumpang_id = savedPassenger._id;
     await user.save();
 
@@ -178,10 +165,8 @@ const logout = (req, res) => {
   res.status(200).json({ message: 'Logout successful' });
 };
 
-// Migrate existing users to have passenger IDs
 const migrateUsers = async (req, res) => {
   try {
-    // Find all users without penumpang_id
     const users = await User.find({
       $or: [
         { penumpang_id: { $exists: false } },
@@ -192,7 +177,6 @@ const migrateUsers = async (req, res) => {
     const results = [];
 
     for (const user of users) {
-      // Create passenger for this user
       const newPassenger = new Penumpang({
         nama_penumpang: user.username,
         email: user.email,
@@ -201,7 +185,6 @@ const migrateUsers = async (req, res) => {
 
       const savedPassenger = await newPassenger.save();
 
-      // Update user with passenger ID
       user.penumpang_id = savedPassenger._id;
       await user.save();
 
