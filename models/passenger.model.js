@@ -22,15 +22,14 @@ const penumpangSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    unique: true,
-    sparse: true
+    sparse: true 
   },
   alamat: {
     type: String
   },
   kewarganegaraan: {
     type: String,
-    required: true
+    default: 'Not Specified'
   }
 }, { timestamps: true });
 
