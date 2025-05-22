@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth.route');
@@ -10,6 +11,8 @@ const gateRoutes = require('./routes/gate.route');
 const passengerRoutes = require('./routes/passenger.route');
 const flightRoutes = require('./routes/flight.route');
 const ticketRoutes = require('./routes/ticket.route');
+const noteRoutes = require('./routes/note.route');
+const tagRoutes = require('./routes/tag.route');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +34,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -48,6 +54,8 @@ app.use('/api/gates', gateRoutes);
 app.use('/api/passengers', passengerRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/tickets', ticketRoutes);
+app.use('/api/notes', noteRoutes);
+app.use('/api/tags', tagRoutes);
 
 // Test route
 app.get('/', (req, res) => {

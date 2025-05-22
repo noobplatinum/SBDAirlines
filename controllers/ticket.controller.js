@@ -43,7 +43,7 @@ const getTicketById = async (req, res) => {
 
 const createTicket = async (req, res) => {
   try {
-    const newTicket = new Tiket(req.body);
+    const newTicket = new Tiket(req.body);  // Here "Tiket" is used instead of "Ticket"
     const savedTicket = await newTicket.save();
     res.status(201).json(savedTicket);
   } catch (error) {
